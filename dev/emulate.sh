@@ -11,6 +11,7 @@
 #   emulate.sh btn <name> [n] # press back|up|select|down (n times)
 #   emulate.sh hold <name>    # long-press (~0.75s) back|up|select|down
 #   emulate.sh logs           # tail the JS (pkjs) log
+#   emulate.sh serve [port]   # host the built .pbw on your LAN for phone sideload
 #   emulate.sh stop           # remove this project's emulator container
 #
 # Env overrides:
@@ -117,6 +118,26 @@ case "${1:-}" in
   hold) press "${2:?usage: hold <back|up|select|down>}" 1 0.75 ;;
 
   logs) $DEX bash -c "tail -f /tmp/sess.log" ;;
+
+  serve)
+    # Host the built .pbw over plain HTTP so a phone on the same WiFi can download
+    # and "Open with" the Pebble app to sideload it. The watch can't install over
+    # USB here, so LAN download is the delivery path. Rebuild first so we never
+    # serve a stale bundle. Port is derived per-project (stable, collision-free
+    # across apps) unless you pass one; everything is printed, so guessing isn't
+    # needed. Runs in the foreground — Ctrl-C to stop (or background it with &).
+    build_in_container >/dev/null
+    PBW=$(ls build/*.pbw 2>/dev/null | head -1)
+    [ -n "$PBW" ] || { echo "no .pbw in build/ (build failed?)"; exit 1; }
+    PORT="${2:-$((9000 + $(printf '%s' "$SLUG" | cksum | cut -d' ' -f1) % 100))}"
+    echo "Serving $PBW for sideload (Ctrl-C to stop):"
+    for ip in $(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1); do
+      echo "  http://$ip:$PORT/$(basename "$PBW")"
+    done
+    echo "  → open on your phone, then 'Open with' the Pebble app."
+    cd build && exec python3 -m http.server "$PORT" --bind 0.0.0.0
+    ;;
+
   stop) docker rm -f "$NAME" >/dev/null 2>&1 && echo "stopped $NAME" ;;
   *)    sed -n '2,33p' "$0" ;;
 esac
