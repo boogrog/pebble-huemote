@@ -122,7 +122,7 @@ function pair() {
       return;
     }
     var attempts = 0;
-    var maxAttempts = 15;  // ~30s window to press the link button
+    var maxAttempts = 45;  // ~90s window to press the link button
     (function tryOnce() {
       attempts++;
       http('POST', 'http://' + ip + '/api', { devicetype: 'huemote#pebble' },
