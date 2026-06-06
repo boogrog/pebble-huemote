@@ -1,0 +1,6 @@
+build/
+screenshots/
+node_modules/
+.lock-waf*
+*.pbw
+.DS_Store

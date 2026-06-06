@@ -1,0 +1,45 @@
+{
+  "name": "huemote",
+  "author": "Brian Wrestler",
+  "version": "1.0.0",
+  "private": true,
+  "keywords": [
+    "pebble-app"
+  ],
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Huemote",
+    "uuid": "b92068fe-fe63-4a8d-a4f3-165116b2684c",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "basalt",
+      "chalk",
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "cmd",
+      "room_id",
+      "scene_id",
+      "bri",
+      "bridge_status",
+      "item_kind",
+      "item_index",
+      "item_count",
+      "item_name",
+      "item_id",
+      "item_on",
+      "item_bri",
+      "item_group"
+    ],
+    "resources": {
+      "media": []
+    },
+    "capabilities": [
+      "configurable"
+    ]
+  }
+}
